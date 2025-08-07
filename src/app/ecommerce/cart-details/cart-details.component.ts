@@ -229,136 +229,85 @@ export class CartDetailsComponent implements OnInit {
     this.clearAlert();
 
     try {
-      const navigateToCheckout = () => {
-        this.router.navigate(['/checkout'], {
-          queryParams: { email: this.currentViewedEmail },
-        });
-      };
+      // Convert ICartDetail to IRecord format expected by cartService
+      const record: IRecord = {
+        idRecord: detail.recordId,
+        titleRecord: detail.titleRecord || '',
+        price: detail.price || 0,
+        stock: (detail as any).stock || 0, // Access stock safely
+        amount: detail.amount || 0,
+        inCart: true
+      } as IRecord;
 
-      const updatedDetail = await this.cartDetailService
-        .addToCartDetail(this.currentViewedEmail, detail.recordId, 1)
-        .toPromise();
-
-      // Update UI locally first for better user experience
+      await this.cartService.addToCart(record).toPromise();
+      
+      // Update local state
       const itemIndex = this.filteredCartDetails.findIndex(
         (d) => d.recordId === detail.recordId
       );
+      
       if (itemIndex !== -1) {
-        const currentItem = this.filteredCartDetails[itemIndex];
         const updatedItem = {
-          ...currentItem,
-          amount: (currentItem.amount || 0) + 1,
-          stock: updatedDetail?.stock || currentItem.stock,
+          ...this.filteredCartDetails[itemIndex],
+          amount: (this.filteredCartDetails[itemIndex].amount || 0) + 1
         };
         
-        // Create new array with updated item
-        this.filteredCartDetails = [
-          ...this.filteredCartDetails.slice(0, itemIndex),
-          updatedItem,
-          ...this.filteredCartDetails.slice(itemIndex + 1)
-        ];
-        
+        this.filteredCartDetails[itemIndex] = updatedItem;
         this.updateCartTotals();
-        this.cdr.markForCheck(); // Mark for change detection
       }
-
-      // Refresh data from the server
-      await this.loadCartDetails(this.currentViewedEmail);
-
-      // Update the stock value in the UI
-      const updatedRecord = await this.cartDetailService
-        .getRecordDetails(detail.recordId)
-        .toPromise();
-      if (updatedRecord) {
-        const stockIndex = this.filteredCartDetails.findIndex(
-          (d) => d.recordId === detail.recordId
-        );
-        if (stockIndex !== -1) {
-          this.filteredCartDetails[stockIndex].stock = updatedRecord.stock;
-        }
-      }
-
+      
       this.showAlert('Product added to cart', 'success');
     } catch (error) {
       console.error('Error adding to cart:', error);
       this.showAlert('Failed to add product to cart', 'error');
-      // Revert local changes if it fails
-      const itemIndex = this.filteredCartDetails.findIndex(
-        (d) => d.recordId === detail.recordId
-      );
-      if (itemIndex !== -1) {
-        const currentItem = this.filteredCartDetails[itemIndex];
-        const revertedItem = {
-          ...currentItem,
-          amount: Math.max(0, (currentItem.amount || 0) - 1)
-        };
-        
-        // Create new array with reverted item
-        this.filteredCartDetails = [
-          ...this.filteredCartDetails.slice(0, itemIndex),
-          revertedItem,
-          ...this.filteredCartDetails.slice(itemIndex + 1)
-        ];
-        
-        this.updateCartTotals();
-        this.cdr.markForCheck(); // Mark for change detection
-      }
     } finally {
       this.isAddingToCart = false;
+      this.cdr.markForCheck();
     }
   }
 
   async removeRecord(detail: ICartDetail): Promise<void> {
-    if (!this.currentViewedEmail || detail.amount <= 0) return;
+    if (!this.currentViewedEmail || !detail.amount || detail.amount <= 0) return;
+
+    this.isAddingToCart = true;
+    this.clearAlert();
 
     try {
-      await this.cartDetailService
-        .removeFromCartDetail(this.currentViewedEmail, detail.recordId, 1)
-        .toPromise();
+      // Convert ICartDetail to IRecord format expected by cartService
+      const record: IRecord = {
+        idRecord: detail.recordId,
+        titleRecord: detail.titleRecord || '',
+        price: detail.price || 0,
+        stock: (detail as any).stock || 0, // Access stock safely
+        amount: detail.amount || 0,
+        inCart: true
+      } as IRecord;
 
-      // Update UI locally first for better user experience
+      await this.cartService.removeFromCart(record).toPromise();
+      
+      // Update local state
       const itemIndex = this.filteredCartDetails.findIndex(
         (d) => d.recordId === detail.recordId
       );
+      
       if (itemIndex !== -1) {
+        const newAmount = Math.max(0, (this.filteredCartDetails[itemIndex].amount || 0) - 1);
         const updatedItem = {
           ...this.filteredCartDetails[itemIndex],
-          amount: Math.max(
-            0,
-            (this.filteredCartDetails[itemIndex].amount || 0) - 1
-          ),
+          amount: newAmount
         };
+        
         this.filteredCartDetails[itemIndex] = updatedItem;
         this.updateCartTotals();
       }
-
-      // Refresh data from the server
-      await this.loadCartDetails(this.currentViewedEmail);
-
-      // Update the stock value in the UI
-      const updatedRecord = await this.cartDetailService
-        .getRecordDetails(detail.recordId)
-        .toPromise();
-      if (updatedRecord) {
-        const stockIndex = this.filteredCartDetails.findIndex(
-          (d) => d.recordId === detail.recordId
-        );
-        if (stockIndex !== -1) {
-          this.filteredCartDetails[stockIndex].stock = updatedRecord.stock;
-        }
-      }
-
+      
       this.showAlert('Product removed from cart', 'success');
     } catch (error) {
       console.error('Error removing from cart:', error);
       this.showAlert('Failed to remove product from cart', 'error');
-      // Revert local changes if it fails
-      const itemIndex = this.filteredCartDetails.findIndex(
-        (d) => d.recordId === detail.recordId
-      );
-      if (itemIndex !== -1) {
-        this.filteredCartDetails[itemIndex].amount += 1;
-      }
+    } finally {
+      this.isAddingToCart = false;
+      this.cdr.markForCheck();
     }
   }
 

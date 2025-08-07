@@ -16,13 +16,19 @@
       @if (isAdmin()) {
       <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px">
         <li class="nav-item">
+          @if (!isGenresPage()) {
           <a class="nav-link" routerLink="/genres">MUSIC GENRES</a>
+          }
         </li>
         <li class="nav-item">
+          @if (!isGroupsPage()) {
           <a class="nav-link" routerLink="/groups">GROUPS</a>
+          }
         </li>
         <li class="nav-item">
+          @if (!isRecordsPage()) {
           <a class="nav-link" routerLink="/records">RECORDS</a>
+          }
         </li>
         @if (!isListGroupsPage()) {
         <li class="nav-item">
@@ -30,13 +36,19 @@
         </li>
         }
         <li class="nav-item">
+          @if (!isCartsPage()) {
           <a class="nav-link" routerLink="/carts">CARTS</a>
+          }
         </li>
         <li class="nav-item">
+          @if (!isOrdersPage()) {
           <a class="nav-link" routerLink="/admin-orders">ORDERS</a>
+          }
         </li>
         <li class="nav-item">
+          @if (!isUsersPage()) {
           <a class="nav-link" routerLink="/users">USERS</a>
+          }
         </li>
       </ul>
       }
@@ -51,7 +63,9 @@
         </li>
         }
         <li class="nav-item">
+          @if (!isOrdersPage()) {
           <a class="nav-link" routerLink="/orders">ORDERS</a>
+          }
         </li>
       </ul>
       }

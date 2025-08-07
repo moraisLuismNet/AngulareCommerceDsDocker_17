@@ -93,7 +93,32 @@ export class NavbarComponent implements OnInit {
   }
 
   isListGroupsPage(): boolean {
-    return this.currentRoute.includes('/listgroups');
+    return this.currentRoute.includes('/listgroups') || this.currentRoute === '/';
+  }
+
+  isOrdersPage(): boolean {
+    const isOrdersPage = this.currentRoute.includes('/admin-orders') || this.currentRoute.includes('/orders');
+    return isOrdersPage;
+  }
+
+  isGenresPage(): boolean {
+    return this.currentRoute.includes('/genres') || this.currentRoute === '/genres';
+  }
+
+  isGroupsPage(): boolean {
+    return this.currentRoute.includes('/groups') || this.currentRoute === '/groups';
+  }
+
+  isRecordsPage(): boolean {
+    return this.currentRoute.includes('/records') || this.currentRoute === '/records';
+  }
+
+  isCartsPage(): boolean {
+    return this.currentRoute.includes('/carts') || this.currentRoute === '/carts';
+  }
+
+  isUsersPage(): boolean {
+    return this.currentRoute.includes('/users') || this.currentRoute === '/users';
   }
 
   logout(): void {

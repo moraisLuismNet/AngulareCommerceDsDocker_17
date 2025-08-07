@@ -241,8 +241,21 @@ export class CartService {
   }
 
   updateCartNavbar(itemCount: number, totalPrice: number): void {
+    // Update the cart items to reflect the new counts
+    const currentCart = this.cartSubject.value;
+    const updatedCart = [...currentCart];
+    
+    // Update the cart subject with the current items (or empty array if no items)
+    this.cartSubject.next(updatedCart);
+    
+    // Update the count and total subjects
     this.cartItemCountSubject.next(itemCount);
     this.cartTotalSubject.next(totalPrice);
+    
+    // Save to local storage if user is logged in
+    if (this.userService.email) {
+      this.saveCartForUser(this.userService.email, updatedCart);
+    }
   }
 
   getCartForUser(email: string): IRecord[] {

@@ -55,7 +55,7 @@
           <td style="font-size: 14px">
             @if (cart.enabled) {
             <a
-              [routerLink]="['/ecommerce/cart-details']"
+              [routerLink]="['/cart-details']"
               [queryParams]="{ viewingUserEmail: cart.userEmail }"
               [class.bg-success]="cart.enabled"
               class="badge text-white text-decoration-none"
