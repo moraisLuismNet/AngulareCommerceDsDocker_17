@@ -92,7 +92,6 @@ AngulareCommerceDsDocker_17/
 ├───angular.json  
 └───package.json  
 
-![AngulareCommderceDs](img/00.png)
 ![AngulareCommderceDs](img/01.png)
 ![AngulareCommderceDs](img/02.png)
 ![AngulareCommderceDs](img/03.png)
@@ -106,6 +105,10 @@ AngulareCommerceDsDocker_17/
 ![AngulareCommderceDs](img/11.png)
 ![AngulareCommderceDs](img/12.png)
 ![AngulareCommderceDs](img/13.png)
+![AngulareCommderceDs](img/14.png)
+![AngulareCommderceDs](img/15.png)
+![AngulareCommderceDs](img/16.png)
+![AngulareCommderceDs](img/17.png)
 
 ## environment
 
